@@ -1,9 +1,11 @@
 from clip_interrogator import Config, Interrogator
 from colorama import Fore, Back, Style
+from datetime import datetime
 from fastapi import FastAPI
 import gpt_2_simple as gpt2
 import logging
 import os
+from urllib.request import urlopen
 import uvicorn
 
 from constants import GroupMeMessage
@@ -41,8 +43,16 @@ async def startup():
 
 @app.post("/bot/message")
 async def recieve(message: GroupMeMessage):
+    logger.info(f"SENDER:     {message.name}, {message.sender_id}")
+    logger.info(f"TIME STAMP: {datetime.utcfromtimestamp(message.created_at)}")
+    logger.info(f"MESSAGE:    {message.text}")
+
     if message.name != os.environ["BOT_NAME"]:  ## prevents schizophrenia
         if message.text.upper().startswith(
+            "@" + os.environ["BOT_NAME"].upper() + " MONKEY"
+        ):
+            await post_image(urlopen(message.avatar_url).read())  ## DOXXED!
+        elif message.text.upper().startswith(
             "@" + os.environ["BOT_NAME"].upper() + " STORYTIME"
         ):
             await post_message(
@@ -86,6 +96,21 @@ async def recieve(message: GroupMeMessage):
                                     + image_description,
                                 )
                             )
+        else:
+            roll: int = random.randint(1, 100)
+            logger.info(f"ROLLED: {roll}")
+            if roll <= 10:
+                logger.info(f"Success!")
+                await post_message(
+                    await generate_response(
+                        sess=app.gpt_sess,
+                        input=message.text,
+                    )
+                )
+            else:
+                print(f"Failure!")
+
+    return True
 
 
 if __name__ == "__main__":
