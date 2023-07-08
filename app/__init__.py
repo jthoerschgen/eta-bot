@@ -14,7 +14,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--testing", help="Uses Testing Settings", action="store_true")
 args = parser.parse_args()
 
-## Set enviornment variables
+# Set enviornment variables
 os.environ["GROUP_ME_TOKEN"] = config("GROUP_ME_TOKEN")
 if args.testing:
     os.environ["BOT_NAME"]: str = config("BOT_NAME_TESTING")

@@ -5,13 +5,13 @@ import io
 import logging
 from PIL import Image
 import random
+import requests
 import sys
 import tensorflow as tf
 
-logger = logging.getLogger(__name__)
-
 from constants import CHECKPOINT_DIR, RUN_NAME
-from .funcs import *
+
+logger = logging.getLogger(__name__)
 
 
 def load_sess(sess: tf.compat.v1.Session = None) -> tf.compat.v1.Session:
@@ -46,7 +46,9 @@ async def generate_response(
         input (str, optional): String used as prefix for response. Defaults to "".
         keep_whole (bool, optional): If True, return entire response. Defaults to False.
         length (int, optional): Length of output. Defaults to value between 30 and 80.
-        temperature (float, optional): How crazy response is, must be between 0-1. Defaults to to value between 0.6 and 0.9.
+        temperature (float, optional):
+            How crazy response is, must be between 0-1.
+            Defaults to to value between 0.6 and 0.9.
 
     Returns:
         str: generated message
@@ -56,7 +58,7 @@ async def generate_response(
     ), f"Provided temperature={temperature}, must be between 0-1"
 
     async with asyncio.Lock():
-        logger.info(f"Generating message using:")
+        logger.info("Generating message using:")
         logger.info(f"  input: {input}" if len(input) > 0 else "  input: None")
         logger.info(f"  length: {length}")
         logger.info(f"  temperature: {temperature}")
@@ -77,7 +79,7 @@ async def generate_response(
         else:
             try:
                 return message[random.randint(1, len(message) - 1)]
-            except:
+            except Exception(IndexError):
                 return message[0]
 
 
@@ -93,7 +95,7 @@ async def describe_image(sess: Interrogator, url: str) -> str:
     """
     with io.BytesIO(
         requests.get(url).content
-    ) as img_buf:  ## download image from message
+    ) as img_buf:  # download image from message
         img: Image.Image = Image.open(img_buf).convert("RGB")
         return (
             sess.interrogate_fast(img)
