@@ -79,7 +79,9 @@ async def generate_response(
         else:
             try:
                 return message[random.randint(1, len(message) - 1)]
-            except Exception(IndexError):
+            except Exception as e:
+                logger.debug(f"Caught: {e}")
+                logger.debug("Returning message[0] instead...")
                 return message[0]
 
 
