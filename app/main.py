@@ -1,17 +1,20 @@
-from clip_interrogator import Config, Interrogator
-from colorama import Fore, Style
-from datetime import datetime
-from fastapi import FastAPI
+import csv
 import logging
 import os
 import random
+from datetime import datetime
 from urllib.request import urlopen
-import uvicorn
 
-from constants import GroupMeMessage
-from functions.funcs import is_mentioned, trim_mention, post_message, post_image
-from functions.chatbot_funcs import load_sess, generate_response, describe_image
+import uvicorn
 from __init__ import args
+from clip_interrogator import Config, Interrogator
+from colorama import Fore, Style
+from constants import GroupMeMessage
+from fastapi import FastAPI
+from functions.chatbot_funcs import (describe_image, generate_response,
+                                     load_sess)
+from functions.funcs import (is_mentioned, post_image, post_message,
+                             trim_mention)
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +55,21 @@ async def recieve(message: GroupMeMessage):
         logger.info(attachment)
 
     if message.name != os.environ["BOT_NAME"]:  # prevents schizophrenia
-        if is_mentioned(message=message.text, parameter="monkey"):
+
+        if is_mentioned(message=message.text, keyword="monkey"):
             await post_image(urlopen(message.avatar_url).read())  # DOXXED!
-        elif is_mentioned(message=message.text, parameter="storytime"):
+
+        elif is_mentioned(message=message.text, keyword="image"):
+            with open(os.environ["IMAGE_URL_CSV"], "r") as csv_file:
+                img_url: str = random.choice(list(csv.reader(csv_file)))[0]
+                print(img_url)
+            await post_image(urlopen(img_url).read())
+        
+        elif is_mentioned(message=message.text, keyword="storytime"):
             await post_message(
                 await generate_response(
                     sess=app.gpt_sess,
-                    input=trim_mention(message=message.text, parameter="storytime"),
+                    input=trim_mention(message=message.text, keyword="storytime"),
                     keep_whole=True,
                     length=250,
                     temperature=0.9,
@@ -78,7 +89,7 @@ async def recieve(message: GroupMeMessage):
                         image_description: str = await describe_image(
                             sess=app.ci, url=attachment["url"]
                         )
-                        if is_mentioned(message=message.text, parameter="identify"):
+                        if is_mentioned(message=message.text, keyword="identify"):
                             await post_message(image_description)
                         else:
                             await post_message(
@@ -102,6 +113,7 @@ async def recieve(message: GroupMeMessage):
                 )
             else:
                 print("Failure!")
+
     return True
 
 

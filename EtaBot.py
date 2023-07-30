@@ -1,8 +1,8 @@
-import gpt_2_simple as gpt2
+import argparse
 import random
 import sys
-import argparse
-import requests
+
+import gpt_2_simple as gpt2
 
 from app.constants import CHECKPOINT_DIR, RUN_NAME
 

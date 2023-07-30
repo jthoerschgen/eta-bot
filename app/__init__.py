@@ -1,7 +1,8 @@
 import argparse
-from decouple import config
 import logging
 import os
+
+from decouple import config
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -15,6 +16,7 @@ parser.add_argument("--testing", help="Uses Testing Settings", action="store_tru
 args = parser.parse_args()
 
 # Set enviornment variables
+os.environ["IMAGE_URL_CSV"] = config("IMAGE_URL_CSV")
 os.environ["GROUP_ME_TOKEN"] = config("GROUP_ME_TOKEN")
 if args.testing:
     os.environ["BOT_NAME"]: str = config("BOT_NAME_TESTING")

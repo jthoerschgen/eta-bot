@@ -1,15 +1,15 @@
 import asyncio
-from clip_interrogator import Interrogator
-import gpt_2_simple as gpt2
 import io
 import logging
-from PIL import Image
 import random
-import requests
 import sys
-import tensorflow as tf
 
+import gpt_2_simple as gpt2
+import requests
+import tensorflow as tf
+from clip_interrogator import Interrogator
 from constants import CHECKPOINT_DIR, RUN_NAME
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
