@@ -62,7 +62,7 @@ async def recieve(message: GroupMeMessage):
         elif is_mentioned(message=message.text, keyword="image"):
             with open(os.environ["IMAGE_URL_CSV"], "r") as csv_file:
                 img_url: str = random.choice(list(csv.reader(csv_file)))[0]
-                print(img_url)
+                logger.info(img_url)
             await post_image(urlopen(img_url).read())
         
         elif is_mentioned(message=message.text, keyword="storytime"):
@@ -112,7 +112,7 @@ async def recieve(message: GroupMeMessage):
                     )
                 )
             else:
-                print("Failure!")
+                logger.info("Failure!")
 
     return True
 
