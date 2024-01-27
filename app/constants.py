@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-CHECKPOINT_DIR = "/home/jimmy/GitHub/etaBot/app/checkpoint/"
+CHECKPOINT_DIR = "/home/jimmy/GitHub/etaBot/checkpoint/"
 RUN_NAME = "run5"
 
 
